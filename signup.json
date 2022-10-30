@@ -1,0 +1,14 @@
+{
+  "moduleName":"SignUp",
+  "tableName":"signUp",
+  "tableDetails":[{
+    "fieldName" : "name",
+    "fieldType" : "String"
+  },{
+    "fieldName" : "Email",
+    "fieldType" : "String"
+  },{
+    "fieldName" : "ContactNumber",
+    "fieldType" : "Number"
+  }]
+}
