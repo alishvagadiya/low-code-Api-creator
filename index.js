@@ -3,20 +3,9 @@
 // import { json } from 'body-parser';
 import fs from 'fs'
 import os from 'os'
-
 const {EOL} = os;
-// const signUp = await fs.readFile("./signup.json", "utf8", (err, jsonString) => {
-//   if (err) {
-//     console.log("File read failed:", err);
-//     return;
-//   }
-//   console.log("File data:", jsonString);
-//   signUpJson = jsonString
-//   return jsonString;
-// });
 
 let configJson = readJson('./signup.json');
-console.log(configJson);
 let moduleName = configJson.moduleName;
 let tableName = configJson.tableName;
 let tableDetails = configJson.tableDetails;
@@ -66,8 +55,8 @@ function defineRoutes(moduleName) {
   let functionRoute = []
   functionRoute['get'] = "app.get('/"+moduleName+"', model."+functionName['get']+")";
   functionRoute['getById'] = "app.get('/"+moduleName+"/:id', model."+functionName['getById']+")";
-  functionRoute['post'] = "app.post('/"+moduleName+"', model."+functionName['add']+")";
-  functionRoute['put'] = "app.put('/"+moduleName+"', model."+functionName['update']+")";
+  functionRoute['post'] = "app.post('/"+moduleName+"', model."+functionName['post']+")";
+  functionRoute['put'] = "app.put('/"+moduleName+"', model."+functionName['put']+")";
   functionRoute['delete'] = "app.delete('/"+moduleName+"', model."+functionName['delete']+")";
   return functionRoute;
 }
@@ -82,7 +71,6 @@ function tableToValidation(tableDetails) {
   }
   return validationBody.join(EOL)
 }
-
 
 function createGetDbFunction(moduleName,functionName,tableName,fieldNameList) {
   return 'const '+functionName+' = (request, response) => {'+EOL+
@@ -196,7 +184,7 @@ function dbPostFix(functionName) {
   let functionNameToStr = funName.substring(0, funName.length-2)
   console.log(funName)
   // let functionNameToStr = funName.join(',');
-  return 'module.exports = {'+EOL+functionNameToStr+EOL + '}'
+  return 'module.exports = {'+EOL+'  '+functionNameToStr+EOL + '}'
 }
 
 function createModelFile(dbFunction) {
@@ -211,11 +199,11 @@ function createModelFile(dbFunction) {
   '  }else{'+EOL+
   '    console.log("Connected to the SQLite database.")'+EOL+
   '  }'+EOL+
-  '});'
+  '});'+EOL
 
   for (let index in dbFunction) {
     let field = dbFunction[index]
-    modelBody += field
+    modelBody += field + EOL
   }
   return(modelBody);
 }
@@ -241,8 +229,7 @@ function createRoutesFile(routeList) {
   ""+EOL+
   "app.get('/', (request, response) => {"+EOL+
   "  response.json({ info: 'Node.js, Express, and sqlite API' })"+EOL+
-  "})"+EOL+
-  ""+EOL+
+  "})"+EOL+EOL+
   arrToStr+EOL+
   "app.listen(port, () => {"+EOL+
   "  console.log(`App running on port ${port}.`)"+EOL+
