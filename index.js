@@ -56,8 +56,8 @@ function defineRoutes(moduleName) {
   functionRoute['get'] = "app.get('/"+moduleName+"', model."+functionName['get']+")";
   functionRoute['getById'] = "app.get('/"+moduleName+"/:id', model."+functionName['getById']+")";
   functionRoute['post'] = "app.post('/"+moduleName+"', model."+functionName['post']+")";
-  functionRoute['put'] = "app.put('/"+moduleName+"', model."+functionName['put']+")";
-  functionRoute['delete'] = "app.delete('/"+moduleName+"', model."+functionName['delete']+")";
+  functionRoute['put'] = "app.put('/"+moduleName+"/:id', model."+functionName['put']+")";
+  functionRoute['delete'] = "app.delete('/"+moduleName+"/:id', model."+functionName['delete']+")";
   return functionRoute;
 }
 
@@ -124,8 +124,7 @@ function createAddDbFunction(moduleName,functionName,tableName,fieldNameList,val
     '      }'+EOL+
     '      response.json({'+EOL+
     '          "message": "success",'+EOL+
-    '          "data": data,'+EOL+
-    '          "id" : this.lastID'+EOL+
+    '          "dataId" : this.lastID'+EOL+
     '      })'+EOL+
     '  });'+EOL+
     '}'+EOL
@@ -153,7 +152,6 @@ function createUpdateDbFunction(moduleName,functionName,tableName,fieldNameList,
   '          }'+EOL+
   '          response.json({'+EOL+
   '              message: "success",'+EOL+
-  '              data: data'+EOL+
   '          })'+EOL+
   '  });'+EOL+
   '}'+EOL
