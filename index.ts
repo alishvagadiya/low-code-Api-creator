@@ -3,11 +3,11 @@ const os = require('os')
 const {EOL} = os;
 
 let configJson = readJson('./signup.json');
-let moduleName = configJson.moduleName;
-let tableName = configJson.tableName;
-let tableDetails = configJson.tableDetails;
-let fieldNameList = [];
-let dbFunction = [];
+let moduleName:string = configJson.moduleName;
+let tableName:string = configJson.tableName;
+let tableDetails:string[] = configJson.tableDetails;
+let fieldNameList:string[] = [];
+let dbFunction:string[] = [];
 for (let index in tableDetails) {
   let field = tableDetails[index]
   fieldNameList[index] = field['fieldName']
@@ -21,7 +21,7 @@ dbFunction['update'] =createUpdateDbFunction(moduleName,functionName['put'],tabl
 dbFunction['delete'] =createDeleteDbFunction(moduleName,functionName['delete'],tableName)
 dbFunction['postFix'] = dbPostFix(functionName);
 
-function readJson(filePath) {
+function readJson(filePath:string) {
   const rawJson = fs.readFileSync(filePath);
   const jsonObject = JSON.parse(rawJson);
   return jsonObject
@@ -29,7 +29,7 @@ function readJson(filePath) {
 const modelBody = createModelFile(dbFunction);
 const routeBody = createRoutesFile(defineRoutes(moduleName));
 
-function writeFile(fileName,fileBody) {
+function writeFile(fileName:string,fileBody) {
   fs.appendFile(fileName, fileBody, function (err) {
     if (err) throw err;
     console.log('Saved!');
@@ -38,7 +38,7 @@ function writeFile(fileName,fileBody) {
 
 writeFile('model.js',modelBody)
 writeFile('route.js',routeBody)
-function defineFunction(moduleName){
+function defineFunction(moduleName:string){
   let functionName = []
   functionName['get'] = "get"+moduleName;
   functionName['getById'] = "get"+moduleName+"ById";
@@ -48,7 +48,7 @@ function defineFunction(moduleName){
   return functionName;
 }
 
-function defineRoutes(moduleName) {
+function defineRoutes(moduleName:string) {
   let functionRoute = []
   functionRoute['get'] = "app.get('/"+moduleName+"', model."+functionName['get']+")";
   functionRoute['getById'] = "app.get('/"+moduleName+"/:id', model."+functionName['getById']+")";
@@ -58,8 +58,8 @@ function defineRoutes(moduleName) {
   return functionRoute;
 }
 
-function tableToValidation(tableDetails) {
-  let validationBody = [];
+function tableToValidation(tableDetails:string[]) {
+  let validationBody:string[] = [];
   for (let index in tableDetails) {
     let field = tableDetails[index]
     validationBody[index] = '  if ((typeof '+field['fieldName']+') == '+field['fieldType']+'){'+EOL+
@@ -69,7 +69,7 @@ function tableToValidation(tableDetails) {
   return validationBody.join(EOL)
 }
 
-function createGetDbFunction(moduleName,functionName,tableName,fieldNameList) {
+function createGetDbFunction(moduleName:string,functionName:string,tableName:string,fieldNameList:string[]) {
   return 'const '+functionName+' = (request, response) => {'+EOL+
   '    const sql = "select '+fieldNameList+' from '+tableName+'"'+EOL+
   '      const params = []'+EOL+
@@ -85,7 +85,7 @@ function createGetDbFunction(moduleName,functionName,tableName,fieldNameList) {
   '        });'+EOL+
   '  }'+EOL
 }
-function createGetByIdDbFunction(moduleName,functionName,tableName,fieldNameList) {
+function createGetByIdDbFunction(moduleName:string,functionName:string,tableName:string,fieldNameList:string[]) {
   return 'const '+functionName+' = (request, response) => {'+EOL+
   '  const id = parseInt(request.params.id)'+EOL+
   '  var sql = "select '+fieldNameList+' from '+moduleName+' where id = ?"'+EOL+
@@ -103,7 +103,7 @@ function createGetByIdDbFunction(moduleName,functionName,tableName,fieldNameList
   '}'+EOL
 }
 
-function createAddDbFunction(moduleName,functionName,tableName,fieldNameList,validationBody) {
+function createAddDbFunction(moduleName:string,functionName:string,tableName:string,fieldNameList:string[],validationBody:string) {
   return 'const '+functionName+' = (request, response) => {'+EOL+
     '  const { '+fieldNameList+' } = request.body'+EOL+
     '  const errors=[]'+EOL+
@@ -127,8 +127,8 @@ function createAddDbFunction(moduleName,functionName,tableName,fieldNameList,val
     '}'+EOL
 }
 
-function createUpdateDbFunction(moduleName,functionName,tableName,fieldNameList,tableDetails){
-  const updateQuery = []
+function createUpdateDbFunction(moduleName:string,functionName:string,tableName:string,fieldNameList:string[],tableDetails:string[]){
+  const updateQuery:string[] = []
   for (let index in tableDetails) {
     let field = tableDetails[index]
     updateQuery[index] = '        '+field['fieldName']+' = COALESCE(?,'+field['fieldName']+')'
@@ -154,7 +154,7 @@ function createUpdateDbFunction(moduleName,functionName,tableName,fieldNameList,
   '}'+EOL
 }
 
-function createDeleteDbFunction(moduleName,functionName,tableName){
+function createDeleteDbFunction(moduleName:string,functionName:string,tableName:string){
   return 'const '+functionName+' = (request, response) => {'+EOL+
   '  const id = parseInt(request.params.id)'+EOL+
   ''+EOL+
@@ -170,7 +170,7 @@ function createDeleteDbFunction(moduleName,functionName,tableName){
   '}'+EOL
 }
 
-function dbPostFix(functionName) {
+function dbPostFix(functionName:string[]) {
   let funName = ''
   for (let index in functionName) {
     let field = functionName[index]
@@ -182,7 +182,7 @@ function dbPostFix(functionName) {
   return 'module.exports = {'+EOL+'  '+functionNameToStr+EOL + '}'
 }
 
-function createModelFile(dbFunction) {
+function createModelFile(dbFunction:string[]) {
   let modelBody = '';
   modelBody += 'const sqlite3 = require("sqlite3").verbose()'+EOL+
   'const DBSOURCE = "db.sqlite"'+EOL+
@@ -202,7 +202,7 @@ function createModelFile(dbFunction) {
   }
   return(modelBody);
 }
-function createRoutesFile(routeList) {
+function createRoutesFile(routeList:string[]) {
   let arrToStr = ''
   for (let index in routeList) {
     let route = routeList[index]
