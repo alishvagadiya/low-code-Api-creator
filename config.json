@@ -1,14 +1,14 @@
-{
-  "moduleName":"SignUp",
-  "tableName":"signUp",
+[{
+  "moduleName":"Student",
+  "tableName":"student",
   "tableDetails":[{
     "fieldName" : "name",
     "fieldType" : "String"
   },{
-    "fieldName" : "Email",
+    "fieldName" : "class",
     "fieldType" : "String"
   },{
-    "fieldName" : "ContactNumber",
+    "fieldName" : "contactNumber",
     "fieldType" : "Number"
   }]
-}
+}]
