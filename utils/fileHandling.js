@@ -7,8 +7,8 @@ function readJson(filePath) {
 }
 
 function writeFile(filePath, fileBody) {
-  console.log(ensureDirectoryExist(filePath), filePath)
-  if (!ensureDirectoryExist(filePath)) {
+  let folderExist = ensureDirectoryExist(filePath)
+  if (!folderExist) {
     console.log('folder is not exists')
     return;
   }
@@ -18,20 +18,23 @@ function writeFile(filePath, fileBody) {
       console.log(err)
       throw err
     };
-    console.log('Saved!');
+    console.log(filePath + ' created !');
   });
 }
 
 
-function ensureDirectoryExist(filePath) {
+function ensureDirectoryExist(filePath, counter = 0) {
   let dirname = path.dirname(filePath);
-  console.log(dirname)
-  console.log(fs.existsSync(dirname))
   if (fs.existsSync(dirname)) {
     return true;
   }
-  ensureDirectoryExist(dirname);
-  fs.mkdirSync(dirname);
+  let dirCreated = fs.mkdirSync(dirname, { recursive: true });
+  let checkFoldersCreated = ensureDirectoryExist(filePath, counter + 1)
+  if (checkFoldersCreated) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 module.exports = { readJson, writeFile, ensureDirectoryExist }
