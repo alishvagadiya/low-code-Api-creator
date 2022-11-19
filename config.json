@@ -1,14 +1,30 @@
-[{
-  "moduleName":"Student",
-  "tableName":"student",
-  "tableDetails":[{
-    "fieldName" : "name",
-    "fieldType" : "String"
+{
+  "dbName" : "schoolSystem",
+  "modules":[{
+    "moduleName":"Student",
+    "tableName":"student",
+    "tableDetails":[{
+      "fieldName" : "name",
+      "fieldType" : "TEXT"
+    },{
+      "fieldName" : "className",
+      "fieldType" : "TEXT"
+    },{
+      "fieldName" : "contactNumber",
+      "fieldType" : "INTEGER"
+    }]
   },{
-    "fieldName" : "class",
-    "fieldType" : "String"
-  },{
-    "fieldName" : "contactNumber",
-    "fieldType" : "Number"
+    "moduleName":"ClassDetails",
+    "tableName":"classDetails",
+    "tableDetails":[{
+      "fieldName" : "name",
+      "fieldType" : "TEXT"
+    },{
+      "fieldName" : "location",
+      "fieldType" : "TEXT"
+    },{
+      "fieldName" : "classTeacher",
+      "fieldType" : "INTEGER"
+    }]
   }]
-}]
+}
