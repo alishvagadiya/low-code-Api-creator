@@ -1,13 +1,15 @@
-function createRoutesFile(routeList) {
-  let arrToStr = ''
-  for (let index in routeList) {
-    let route = routeList[index]
-    arrToStr += route + EOL
-  }
-  let routeBody = "const express = require('express')" + EOL +
+const { EOL } = require('os')
+
+function createRoutesFile(moduleName, functionName) {
+  let routeBody = buildHeader();
+  routeBody += defineRoutes(moduleName, functionName) + EOL
+  routeBody += buildFooter();
+  return (routeBody);
+}
+function buildHeader() {
+  let routeHeader = "const express = require('express')" + EOL +
     "const bodyParser = require('body-parser')" + EOL +
     "const app = express()" + EOL +
-    "const db = require('./db')" + EOL +
     "const model = require('./model')" + EOL +
     "const port = 3000" + EOL +
     "" + EOL +
@@ -20,22 +22,31 @@ function createRoutesFile(routeList) {
     "" + EOL +
     "app.get('/', (request, response) => {" + EOL +
     "  response.json({ info: 'Node.js, Express, and sqlite API' })" + EOL +
-    "})" + EOL + EOL +
-    arrToStr + EOL +
-    "app.listen(port, () => {" + EOL +
+    "})" + EOL + EOL
+  return routeHeader;
+}
+function defineRoutes(moduleName, functionName) {
+  let functionRoute = [];
+  let routeBody = '';
+  let endPointName = toLowerCase(moduleName)
+  functionRoute['get'] = "app.get('/" + endPointName + "', model." + functionName['get'] + ")";
+  functionRoute['getById'] = "app.get('/" + endPointName + "/:id', model." + functionName['getById'] + ")";
+  functionRoute['post'] = "app.post('/" + endPointName + "', model." + functionName['post'] + ")";
+  functionRoute['put'] = "app.put('/" + endPointName + "/:id', model." + functionName['put'] + ")";
+  functionRoute['delete'] = "app.delete('/" + endPointName + "/:id', model." + functionName['delete'] + ")";
+
+  for (let index in functionRoute) {
+    let route = functionRoute[index]
+    routeBody += route + EOL
+  }
+  return routeBody;
+}
+
+function buildFooter() {
+  let routeFooter = "app.listen(port, () => {" + EOL +
     "  console.log(`App running on port ${port}.`)" + EOL +
-    "})"
-  return (routeBody);
+    "})";
+  return routeFooter;
 }
 
-function defineRoutes(moduleName) {
-  let functionRoute = []
-  functionRoute['get'] = "app.get('/" + moduleName + "', model." + functionName['get'] + ")";
-  functionRoute['getById'] = "app.get('/" + moduleName + "/:id', model." + functionName['getById'] + ")";
-  functionRoute['post'] = "app.post('/" + moduleName + "', model." + functionName['post'] + ")";
-  functionRoute['put'] = "app.put('/" + moduleName + "/:id', model." + functionName['put'] + ")";
-  functionRoute['delete'] = "app.delete('/" + moduleName + "/:id', model." + functionName['delete'] + ")";
-  return functionRoute;
-}
-
-module.exports = { createRoutesFile, defineRoutes }
+module.exports = { createRoutesFile }

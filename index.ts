@@ -3,7 +3,7 @@ const os = require('os')
 const {EOL} = os;
 
 let configJson = readJson('./signup.json');
-let moduleName:string = configJson.moduleName;
+let moduleName :string = configJson.moduleName;
 let tableName:string = configJson.tableName;
 let tableDetails:string[] = configJson.tableDetails;
 let fieldNameList:string[] = [];

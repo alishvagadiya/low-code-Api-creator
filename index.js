@@ -24,7 +24,7 @@ for (const key in modules) {
   }
   tables[tableName] = tblObjToTblBody.join(',' + EOL);
   const functionName = defineFunction(moduleName)
-  const modelBody = createModelFile(moduleName, functionName, tableName, fieldNameList, tableDetails);
+  const modelBody = createModelFile(moduleName, functionName, tableName, fieldNameList, tableDetails, dbName);
   const routeBody = createRoutesFile(moduleName, functionName);
   writeFile('src/' + moduleName + '/' + 'model.js', modelBody)
   writeFile('src/' + moduleName + '/' + 'route.js', routeBody)
