@@ -28,7 +28,7 @@ function buildHeader() {
 function defineRoutes(moduleName, functionName) {
   let functionRoute = [];
   let routeBody = '';
-  let endPointName = toLowerCase(moduleName)
+  let endPointName = moduleName.toLowerCase()
   functionRoute['get'] = "app.get('/" + endPointName + "', model." + functionName['get'] + ")";
   functionRoute['getById'] = "app.get('/" + endPointName + "/:id', model." + functionName['getById'] + ")";
   functionRoute['post'] = "app.post('/" + endPointName + "', model." + functionName['post'] + ")";
