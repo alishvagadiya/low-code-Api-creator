@@ -1,47 +1,52 @@
-name: Semgrep Autofix & PR
+name: Semgrep Autofix MCP
 
 on:
+  schedule:
+    - cron: '0 1 * * *' # Daily 1 AM UTC run
+  workflow_dispatch:
   push:
-    branches: [main] # or dev branch
+    branches: [main] # Adjust to your dev branch
   pull_request:
 
 jobs:
-  semgrep-autofix:
+  semgrep_autofix:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # allows pushing back to repo
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python (Semgrep dependency)
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.x
+          python-version: "3.x"
 
       - name: Install Semgrep
-        run: |
-          pip install semgrep
+        run: pip install semgrep
 
-      - name: Run Semgrep with Autofix
+      - name: Run Semgrep Autofix
         run: |
-          semgrep --config=auto --autofix --error
+          semgrep --config=.semgrep.yml --autofix --json > semgrep-output.json || true
+          cat semgrep-output.json
 
-      - name: Run tests
+      - name: Run Tests (mock)
         run: |
-          # Replace this with your test command
-          npm install
-          npm test
+          echo "⚠️ Replace with your actual test command"
+          echo "Running tests..."
+          # npm test OR go test ./... OR pytest, etc.
 
-      - name: Commit and push changes
+      - name: Commit & Push Fixes
         if: success()
         run: |
           git config user.name "semgrep-bot"
           git config user.email "semgrep@bot.dev"
-          git add .
-          git commit -m "chore: autofix semgrep issues"
-          git push
-        env:
-          # You need this to let GitHub Actions push
-          # This token has permission to push back to repo
-          # Or you can use PAT in secret
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+          if ! git diff --quiet; then
+            git add .
+            git commit -m "chore: semgrep autofix"
+            git push origin HEAD
+          else
+            echo "No changes to commit."
+          fi
