@@ -2,7 +2,7 @@ name: Semgrep Autofix
 
 on:
   push:
-    branches: [main, *]
+    branches: [**]
   pull_request:
 
 jobs:
@@ -59,7 +59,7 @@ jobs:
         with:
           token: ${{ secrets.PAT_TOKEN }}
           commit-message: "chore: semgrep autofix"
-          title: "🔧 Semgrep Autofix for ${{ steps.commit_and_push.outputs.base_branch }}"
+          title: "Semgrep Autofix for ${{ steps.commit_and_push.outputs.base_branch }}"
           body: |
             Automatic semgrep autofixes applied. Please review & merge.
           branch: ${{ steps.commit_and_push.outputs.branch_name }}
