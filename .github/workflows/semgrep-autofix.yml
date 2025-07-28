@@ -1,0 +1,47 @@
+name: Semgrep Autofix & PR
+
+on:
+  push:
+    branches: [main] # or dev branch
+  pull_request:
+
+jobs:
+  semgrep-autofix:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python (Semgrep dependency)
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+
+      - name: Install Semgrep
+        run: |
+          pip install semgrep
+
+      - name: Run Semgrep with Autofix
+        run: |
+          semgrep --config=auto --autofix --error
+
+      - name: Run tests
+        run: |
+          # Replace this with your test command
+          npm install
+          npm test
+
+      - name: Commit and push changes
+        if: success()
+        run: |
+          git config user.name "semgrep-bot"
+          git config user.email "semgrep@bot.dev"
+          git add .
+          git commit -m "chore: autofix semgrep issues"
+          git push
+        env:
+          # You need this to let GitHub Actions push
+          # This token has permission to push back to repo
+          # Or you can use PAT in secret
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
