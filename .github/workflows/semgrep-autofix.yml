@@ -60,8 +60,13 @@ jobs:
           
       - name: echo value
         run: |
-          branch: ${{ steps.commit_and_push.outputs.fix_branch }}
-          base: ${{ steps.commit_and_push.outputs.base_branch }}
+          echo "1.branch: ${{ steps.commit_and_push.outputs.fix_branch }}"
+          echo "2.base: ${{ steps.commit_and_push.outputs.base_branch }}"
+          echo "3. ${{ github.event.pull_request.head.ref }}"
+          echo "4. ${{ github.event.pull_request.base.ref }}"
+          echo "5. ${{ github.head_ref }}"
+          echo "6. ${{ github.base_ref }}"
+          echo "7. ${{ github.ref_name }}"
 
       - name: Create PR to Same Branch
         if: success()
