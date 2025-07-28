@@ -8,7 +8,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
     console.error(err.message)
     throw err
   } else {
-    console.log('Connected to the SQLite database.')
+    // TODO: remove log
     db.run(`CREATE TABLE student (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           name TEXT NOT NULL,
@@ -22,5 +22,5 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
       });
   }
 });
-console.log(db)
+// TODO: remove log
 module.exports = db

@@ -9,16 +9,16 @@ function readJson(filePath) {
 function writeFile(filePath, fileBody) {
   let folderExist = ensureDirectoryExist(filePath)
   if (!folderExist) {
-    console.log('folder is not exists')
+    // TODO: remove log
     return;
   }
 
   fs.appendFile(filePath, fileBody, function (err) {
     if (err) {
-      console.log(err)
+      // TODO: remove log
       throw err
     };
-    console.log(filePath + ' created !');
+    // TODO: remove log;
   });
 }
 

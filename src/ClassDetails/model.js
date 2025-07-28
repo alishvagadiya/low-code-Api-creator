@@ -6,7 +6,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
     console.error(err.message)
     throw err
   } else {
-    console.log("Connected to the SQLite database.")
+    // TODO: remove log
   }
 });
 const getClassDetails = (request, response) => {

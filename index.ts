@@ -32,7 +32,7 @@ const routeBody = createRoutesFile(defineRoutes(moduleName));
 function writeFile(fileName:string,fileBody) {
   fs.appendFile(fileName, fileBody, function (err) {
     if (err) throw err;
-    console.log('Saved!');
+    // TODO: remove log;
   });
 }
 
@@ -177,7 +177,7 @@ function dbPostFix(functionName:string[]) {
     funName += field + ', '
   }
   let functionNameToStr = funName.substring(0, funName.length-2)
-  console.log(funName)
+  // TODO: remove log
   // let functionNameToStr = funName.join(',');
   return 'module.exports = {'+EOL+'  '+functionNameToStr+EOL + '}'
 }
