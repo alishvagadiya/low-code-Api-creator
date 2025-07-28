@@ -1,7 +1,7 @@
-console.log("test console.log");
+// TODO: remove log;
 
 // Function with a common issue: using eval (security risk)
 function runUserCode(userInput) {
     // This is intentionally insecure for Semgrep autofix testing
-    eval(userInput);
+    // ⚠️ eval removed for safety;
 }
