@@ -40,7 +40,8 @@ jobs:
           git config user.email "semgrep@bot.dev"
 
           if ! git diff --quiet; then
-            git checkout -b "$FIX_BRANCH"
+            git fetch origin "$BASE_BRANCH"
+            git checkout -b "$FIX_BRANCH" "origin/$BASE_BRANCH"
             git add .
             git commit -m "chore: semgrep autofix for ${BASE_BRANCH} at ${TIMESTAMP}"
             git push origin "$FIX_BRANCH"
