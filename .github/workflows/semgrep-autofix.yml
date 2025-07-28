@@ -2,14 +2,15 @@ name: Semgrep Autofix
 
 on:
   push:
-    branches: [main] # Adjust to your dev branch
+    branches: [main, *]
   pull_request:
 
 jobs:
   semgrep_autofix:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # allows pushing back to repo
+      contents: write
+      pull-requests: write
 
     steps:
       - name: Checkout code
@@ -28,22 +29,38 @@ jobs:
           semgrep --config=.semgrep.yml --autofix --json > semgrep-output.json || true
           cat semgrep-output.json
 
-      - name: Run Tests (mock)
-        run: |
-          echo "⚠️ Replace with your actual test command"
-          echo "Running tests..."
-          # npm test OR go test ./... OR pytest, etc.
-
       - name: Commit & Push Fixes
-        if: success()
+        id: commit_and_push
         run: |
+          TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          BASE_BRANCH="${GITHUB_REF##*/}"
+          FIX_BRANCH="semgrep/autofix-${BASE_BRANCH}-${TIMESTAMP}"
+
           git config user.name "semgrep-bot"
           git config user.email "semgrep@bot.dev"
 
           if ! git diff --quiet; then
+            git checkout -b "$FIX_BRANCH"
             git add .
-            git commit -m "chore: semgrep autofix"
-            git push origin HEAD
+            git commit -m "chore: semgrep autofix for ${BASE_BRANCH} at ${TIMESTAMP}"
+            git push origin "$FIX_BRANCH"
+            echo "branch_name=$FIX_BRANCH" >> "$GITHUB_OUTPUT"
+            echo "base_branch=$BASE_BRANCH" >> "$GITHUB_OUTPUT"
           else
             echo "No changes to commit."
           fi
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+
+      - name: Create PR to Same Branch
+        if: success()
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+          commit-message: "chore: semgrep autofix"
+          title: "🔧 Semgrep Autofix for ${{ steps.commit_and_push.outputs.base_branch }}"
+          body: |
+            Automatic semgrep autofixes applied. Please review & merge.
+          branch: ${{ steps.commit_and_push.outputs.branch_name }}
+          base: ${{ steps.commit_and_push.outputs.base_branch }}
