@@ -2,7 +2,7 @@ name: Semgrep Autofix
 
 on:
   push:
-    branches: [main] # Adjust to your dev branch
+    branches: [**]
   pull_request:
 
 jobs:
@@ -47,3 +47,18 @@ jobs:
           else
             echo "No changes to commit."
           fi
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+
+      - name: Create PR to Same Branch
+        if: success()
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+          commit-message: "chore: semgrep autofix"
+          title: "Semgrep Autofix for ${{ steps.commit_and_push.outputs.base_branch }}"
+          body: |
+            Automatic semgrep autofixes applied. Please review & merge.
+          branch: ${{ steps.commit_and_push.outputs.branch_name }}
+          base: ${{ steps.commit_and_push.outputs.base_branch }}
