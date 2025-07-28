@@ -25,21 +25,17 @@ jobs:
         run: |
           semgrep --config=.semgrep.yml --autofix --json > semgrep-output.json || true
           cat semgrep-output.json
+      - name: Set branch name
+        run: |
+          TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          BASE_BRANCH="${{ github.event.pull_request.head.ref }}"
+          FIX_BRANCH="semgrep/autofix-${BASE_BRANCH}-${TIMESTAMP}"
+          echo "Base branch: $BASE_BRANCH"
+          echo "fix branch: $FIX_BRANCH"
 
       - name: Commit & Push Fixes
         if: success()
         run: |
-          TIMESTAMP=$(date +%Y%m%d%H%M%S)
-          echo "github.event.pull_request.head.ref = ${{ github.event.pull_request.head.ref }}"
-          echo "github.ref_name = ${{ github.ref_name }}"
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            BASE_BRANCH="${{ github.event.pull_request.head.ref }}"
-          else
-            BASE_BRANCH="${{ github.ref_name }}"
-          fi
-
-          FIX_BRANCH="semgrep/autofix-${BASE_BRANCH}-${TIMESTAMP}"
-
           git config user.name "semgrep-bot"
           git config user.email "semgrep@bot.dev"
 
@@ -50,23 +46,13 @@ jobs:
             git commit -m "chore: semgrep autofix for ${HEAD_BRANCH} at ${TIMESTAMP}"
             git push origin "$FIX_BRANCH"
             echo "fix_branch=$FIX_BRANCH" >> "$GITHUB_OUTPUT"
-            echo "base_branch=$HEAD_BRANCH" >> "$GITHUB_OUTPUT"
+            echo "base_branch=$BASE_BRANCH" >> "$GITHUB_OUTPUT"
           else
             echo "No changes to commit."
           fi
 
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-          
-      - name: echo value
-        run: |
-          echo "1.branch: ${{ steps.commit_and_push.outputs.fix_branch }}"
-          echo "2.base: ${{ steps.commit_and_push.outputs.base_branch }}"
-          echo "3. ${{ github.event.pull_request.head.ref }}"
-          echo "4. ${{ github.event.pull_request.base.ref }}"
-          echo "5. ${{ github.head_ref }}"
-          echo "6. ${{ github.base_ref }}"
-          echo "7. ${{ github.ref_name }}"
 
       - name: Create PR to Same Branch
         if: success()
@@ -74,8 +60,8 @@ jobs:
         with:
           token: ${{ secrets.PAT_TOKEN }}
           commit-message: "chore: semgrep autofix"
-          title: "Semgrep Autofix for ${{ steps.commit_and_push.outputs.base_branch }}"
+          title: "Semgrep Autofix for $BASE_BRANCH"
           body: |
             Automatic semgrep autofixes applied. Please review & merge.
-          branch: ${{ steps.commit_and_push.outputs.fix_branch }}
-          base: ${{ steps.commit_and_push.outputs.base_branch }}
+          branch: $FIX_BRANCH
+          base: $BASE_BRANCH
