@@ -23,5 +23,5 @@ app.put('/ClassDetails/:id', model.updateClassDetails)
 app.delete('/ClassDetails/:id', model.deleteClassDetails)
 
 app.listen(port, () => {
-  console.log(`App running on port ${port}.`)
+  // TODO: remove log
 })
