@@ -1,8 +1,6 @@
 name: Semgrep Autofix
 
 on:
-  push:
-    branches: ['*']
   pull_request:
 
 jobs:
@@ -28,12 +26,6 @@ jobs:
           semgrep --config=.semgrep.yml --autofix --json > semgrep-output.json || true
           cat semgrep-output.json
 
-      - name: Run Tests (mock)
-        run: |
-          echo "⚠️ Replace with your actual test command"
-          echo "Running tests..."
-          # npm test OR go test ./... OR pytest, etc.
-
       - name: Commit & Push Fixes
         if: success()
         run: |
@@ -53,8 +45,10 @@ jobs:
             git fetch origin "$BASE_BRANCH"
             git checkout -b "$FIX_BRANCH" "origin/$BASE_BRANCH"
             git add .
-            git commit -m "chore: semgrep autofix"
-            git push origin HEAD
+            git commit -m "chore: semgrep autofix for ${HEAD_BRANCH} at ${TIMESTAMP}"
+            git push origin "$FIX_BRANCH"
+            echo "fix_branch=$FIX_BRANCH" >> "$GITHUB_OUTPUT"
+            echo "base_branch=$HEAD_BRANCH" >> "$GITHUB_OUTPUT"
           else
             echo "No changes to commit."
           fi
@@ -71,5 +65,5 @@ jobs:
           title: "Semgrep Autofix for ${{ steps.commit_and_push.outputs.base_branch }}"
           body: |
             Automatic semgrep autofixes applied. Please review & merge.
-          branch: ${{ steps.commit_and_push.outputs.branch_name }}
+          branch: ${{ steps.commit_and_push.outputs.fix_branch }}
           base: ${{ steps.commit_and_push.outputs.base_branch }}
