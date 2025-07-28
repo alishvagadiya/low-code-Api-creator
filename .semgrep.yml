@@ -1,0 +1,14 @@
+rules:
+  - id: no-console-log
+    pattern: console.log($MSG)
+    message: "Avoid using console.log, use proper logger instead"
+    severity: WARNING
+    fix: "// TODO: remove log"
+    languages: [javascript, typescript]
+
+  - id: insecure-eval
+    pattern: eval($EXPR)
+    message: "Using eval is dangerous. Avoid at all costs."
+    severity: ERROR
+    fix: "// ⚠️ eval removed for safety"
+    languages: [javascript]
