@@ -1,9 +1,6 @@
 name: Semgrep Autofix
 
 on:
-  schedule:
-    - cron: '0 1 * * *' # Daily 1 AM UTC run
-  workflow_dispatch:
   push:
     branches: [main] # Adjust to your dev branch
   pull_request:
