@@ -37,6 +37,15 @@ jobs:
       - name: Commit & Push Fixes
         if: success()
         run: |
+          TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_BRANCH="${{ github.event.pull_request.head.ref }}"
+          else
+            BASE_BRANCH="${{ github.ref_name }}"
+          fi
+
+          FIX_BRANCH="semgrep/autofix-${BASE_BRANCH}-${TIMESTAMP}"
+
           git config user.name "semgrep-bot"
           git config user.email "semgrep@bot.dev"
 
