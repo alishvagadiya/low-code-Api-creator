@@ -33,7 +33,12 @@ jobs:
         id: commit_and_push
         run: |
           TIMESTAMP=$(date +%Y%m%d%H%M%S)
-          BASE_BRANCH="${GITHUB_REF##*/}"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_BRANCH="${{ github.event.pull_request.head.ref }}"
+          else
+            BASE_BRANCH="${{ github.ref_name }}"
+          fi
+
           FIX_BRANCH="semgrep/autofix-${BASE_BRANCH}-${TIMESTAMP}"
 
           git config user.name "semgrep-bot"
