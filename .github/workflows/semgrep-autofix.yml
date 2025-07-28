@@ -1,4 +1,4 @@
-name: Semgrep Autofix MCP
+name: Semgrep Autofix
 
 on:
   schedule:
