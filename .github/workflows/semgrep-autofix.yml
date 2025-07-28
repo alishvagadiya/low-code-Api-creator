@@ -30,6 +30,8 @@ jobs:
         if: success()
         run: |
           TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          echo "github.event.pull_request.head.ref = ${{ github.event.pull_request.head.ref }}"
+          echo "github.ref_name = ${{ github.ref_name }}"
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             BASE_BRANCH="${{ github.event.pull_request.head.ref }}"
           else
@@ -55,6 +57,11 @@ jobs:
 
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+          
+      - name: echo value
+        run: |
+          branch: ${{ steps.commit_and_push.outputs.fix_branch }}
+          base: ${{ steps.commit_and_push.outputs.base_branch }}
 
       - name: Create PR to Same Branch
         if: success()
